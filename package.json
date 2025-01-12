@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build && node ./src/script/sitemap.js",
     "start": "next start",
     "lint": "next lint"
   },
@@ -12,6 +12,7 @@
     "@radix-ui/react-slot": "^1.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "framer-motion": "^11.17.0",
     "lucide-react": "^0.471.0",
     "next": "15.1.4",
     "react": "^19.0.0",
