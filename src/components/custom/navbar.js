@@ -22,8 +22,8 @@ const links = [
     href: "/blog",
   },
   {
-    name: "Project",
-    href: "/project",
+    name: "About",
+    href: "/about",
   },
 ]
 
@@ -46,7 +46,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/75 backdrop-blur dark:border-gray-600 dark:bg-gray-800/75">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12">
+      <div className="flex h-16 items-center justify-between w-full px-8 sm:px-16 md:px-36 lg:px-52 xl:px-80 2xl:px-96">
         <Link 
           href="/" 
           className="text-lg font-extrabold tracking-tight hover:text-gray-600 dark:hover:text-gray-300 transition-colors"

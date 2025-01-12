@@ -8,9 +8,8 @@ const root = process.cwd()
 
 export async function getAllTags(type) {
     const files = await getFiles(type)
-
     let tagCount = {}
-    // Iterate through each post, putting all found tags into `tags`
+    
     files.forEach((file) => {
         const source = fs.readFileSync(path.join(root, type, file), 'utf8')
         const { data } = matter(source)
@@ -25,6 +24,5 @@ export async function getAllTags(type) {
             })
         }
     })
-
     return tagCount
 }

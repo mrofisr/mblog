@@ -1,8 +1,10 @@
+"use client";
 import { useState } from "react";
-import Pagination from "@/components/Pagination";
-import formatDate from "@/lib/utils/formatDate";
-import Tag from "./Tag";
+import { motion } from "framer-motion";
+import Pagination from "@/components/custom/pagination";
+import formatDate from "@/lib/format-date";
 import Link from "next/link";
+import Tag from "@/components/custom/tag";
 
 export default function ListLayout({
   posts,
@@ -25,7 +27,7 @@ export default function ListLayout({
   return (
     <>
       <div>
-        <div className="relative max-w-lg ">
+        <div className="relative max-w-lg">
           <input
             aria-label="Search articles"
             type="text"
@@ -53,39 +55,50 @@ export default function ListLayout({
           {displayPosts.map((frontMatter) => {
             const { slug, date, title, desc, tags } = frontMatter;
             return (
-              <li key={slug} className="py-4">
-                <article className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
-                  <dl>
-                    <dt className="sr-only">Published on</dt>
-                    <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
-                      <time dateTime={date}>{formatDate(date)}</time>
-                    </dd>
-                  </dl>
-                  <div className="space-y-3 xl:col-span-3">
-                    <div>
-                      <h3 className="text-2xl hover:underline text-yellow-600 dark:text-yellow-400 font-bold leading-8 tracking-tight">
-                        <Link href={`/blog/${slug}`}>{title}</Link>
-                      </h3>
-                      <div className="flex flex-wrap mt-1">
-                        {tags.map((tag) => (
-                          <Tag key={tag} text={tag}/>
-                        ))}
+              <motion.li
+                key={slug}
+                className="py-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.article
+                  className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg p-4 transition-all duration-200"
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <div className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
+                    <dl>
+                      <dt className="sr-only">Published on</dt>
+                      <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+                        <time dateTime={date}>{formatDate(date)}</time>
+                      </dd>
+                    </dl>
+                    <div className="space-y-3 xl:col-span-3">
+                      <div>
+                        <h3 className="text-2xl hover:underline text-yellow-600 dark:text-yellow-400 font-bold leading-8 tracking-tight">
+                          <Link href={`/blog/${slug}`}>{title}</Link>
+                        </h3>
+                        <div className="flex flex-wrap mt-1">
+                          {tags.map((tag) => (
+                            <Tag key={tag} text={tag} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="prose text-gray-500 max-w-none dark:text-gray-400">
+                        {desc}
+                      </div>
+                      <div className="text-base text-primary-500 font-medium leading-6 dark:text-white">
+                        <Link
+                          href={`/blog/${slug}`}
+                          aria-label={`Read "${title}"`}
+                        >
+                          Read more &rarr;
+                        </Link>
                       </div>
                     </div>
-                    <div className="prose text-gray-500 max-w-none dark:text-gray-400">
-                      {desc}
-                    </div>
-                    <div className="text-base text-primary-500 font-medium leading-6 dark:text-white">
-                      <Link
-                        href={`/blog/${slug}`}
-                        aria-label={`Read "${title}"`}
-                      >
-                        Read more &rarr;
-                      </Link>
-                    </div>
                   </div>
-                </article>
-              </li>
+                </motion.article>
+              </motion.li>
             );
           })}
         </ul>
