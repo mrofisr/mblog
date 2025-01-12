@@ -1,8 +1,8 @@
 // sitemap.js
-const globby = require('globby');
 const fs = require('fs');
+const globby = require('globby');
 const prettier = require('prettier');
-const config = require('@/config/config');
+const config = require('config/config.js');
 const path = require('path');
 
 async function generateSitemap() {

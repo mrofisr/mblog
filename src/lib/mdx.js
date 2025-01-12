@@ -3,10 +3,17 @@ import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
 import readingTime from 'reading-time'
-import visit from 'unist-util-visit'
-import codeTitles from './remark-code-title'
-import imgToJsx from './img-to-jsx'
-import getAllFilesRecursively from './utils/files'
+import { visit } from 'unist-util-visit'
+import imgToJsx from '@/lib/img-to-jsx'
+import getAllFilesRecursively from '@/lib/files'
+import remarkCodeTitle from '@/lib/remark-code-title'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import { remarkExtractFrontmatter } from 'remark-extract-frontmatter'
+import rehypeKatex from 'rehype-katex'
+import rehypePrismPlus from 'rehype-prism-plus'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
 const root = process.cwd()
 
@@ -27,7 +34,6 @@ const tokenClassNames = {
 export function getFiles(type) {
     const prefixPaths = path.join(root, type)
     const files = getAllFilesRecursively(prefixPaths)
-    // Only want to return blog/path and ignore root, replace is needed to work on Windows
     return files.map((file) => file.slice(prefixPaths.length + 1).replace(/\\/g, '/'))
 }
 
@@ -48,7 +54,6 @@ export async function getFileBySlug(type, slug) {
         ? fs.readFileSync(mdxPath, 'utf8')
         : fs.readFileSync(mdPath, 'utf8')
 
-    // https://github.com/kentcdodds/mdx-bundler#nextjs-esbuild-enoent
     if (process.platform === 'win32') {
         process.env.ESBUILD_BINARY_PATH = path.join(
             process.cwd(),
@@ -66,27 +71,31 @@ export async function getFileBySlug(type, slug) {
         )
     }
 
-    const { frontmatter, code } = await bundleMDX(source, {
-        // mdx imports can be automatically source from the components directory
+    const { frontmatter, code } = await bundleMDX({
+        source,
         cwd: path.join(process.cwd(), 'components'),
-        xdmOptions(options) {
-            // this is the recommended way to add custom remark/rehype plugins:
-            // The syntax might look weird, but it protects you in case we add/remove
-            // plugins in the future.
+        mdxOptions(options) {
             options.remarkPlugins = [
                 ...(options.remarkPlugins ?? []),
-                require('remark-slug'),
-                require('remark-autolink-headings'),
-                require('remark-gfm'),
-                codeTitles,
-                [require('remark-footnotes'), { inlineNotes: true }],
-                require('remark-math'),
+                remarkGfm,
+                remarkMath,
+                remarkCodeTitle,
+                remarkExtractFrontmatter,
                 imgToJsx,
             ]
             options.rehypePlugins = [
                 ...(options.rehypePlugins ?? []),
-                require('rehype-katex'),
-                [require('rehype-prism-plus'), { ignoreMissing: true }],
+                rehypeSlug,
+                [
+                    rehypeAutolinkHeadings,
+                    {
+                        properties: {
+                            className: ['anchor'],
+                        },
+                    },
+                ],
+                rehypeKatex,
+                [rehypePrismPlus, { ignoreMissing: true }],
                 () => {
                     return (tree) => {
                         visit(tree, 'element', (node, index, parent) => {
@@ -122,9 +131,7 @@ export async function getFileBySlug(type, slug) {
 
 export async function getAllFilesFrontMatter(folder) {
     const prefixPaths = path.join(root, folder)
-
     const files = getAllFilesRecursively(prefixPaths)
-
     const allFrontMatter = []
 
     files.forEach((file) => {

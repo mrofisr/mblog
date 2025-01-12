@@ -1,101 +1,85 @@
-import Image from "next/image";
+import { generateMetadata } from 'next'
+import Layout from "@/components/custom/layout"
+import Tag from "@/components/custom/tag"
+import Title from "@/components/custom/title"
+import config from "@/config/config"
+import formatDate from "@/lib/format-date"
+import { getAllFilesFrontMatter } from "@/lib/mdx"
+import Link from "next/link"
 
-export default function Home() {
+const MAX_DISPLAY = 5
+
+// Metadata configuration using Next.js 15 metadata API
+export const metadata = {
+  title: config.page.index.header,
+  description: `${config.page.index.title} - ${config.page.index.subtitle}`,
+}
+
+// Data fetching using Next.js 15 Server Components
+async function getPosts() {
+  const posts = await getAllFilesFrontMatter("posts")
+  return posts
+}
+
+export default async function Home() {
+  // Fetch posts directly in the component
+  const posts = await getPosts()
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <Layout>
+      <Title title={config.page.index.title} subtitle={config.page.index.subtitle} />
+      <ul className="divide-y divide-gray-400 md:divide-y-1 dark:divide-gray-700">
+        {!posts.length && "No posts found."}
+        {posts.slice(0, MAX_DISPLAY).map((frontMatter) => {
+          const { slug, date, title, desc, tags } = frontMatter
+          return (
+            <li key={slug} className="py-4">
+              <article>
+                <div className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
+                  <dl>
+                    <dt className="sr-only">Published on</dt>
+                    <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
+                      <time dateTime={date}>{formatDate(date)}</time>
+                    </dd>
+                  </dl>
+                  <div className="space-y-5 xl:col-span-3">
+                    <div className="space-y-6">
+                      <div>
+                        <h2 className="text-2xl hover:underline text-yellow-600 dark:text-yellow-400 font-bold leading-8 tracking-tight">
+                          <Link href={`/blog/${slug}`}>{title}</Link>
+                        </h2>
+                        <div className="flex flex-wrap mt-1">
+                          {tags.map((tag) => (
+                            <Tag key={tag} text={tag} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="prose text-gray-500 max-w-none dark:text-gray-400">
+                        {desc}
+                      </div>
+                    </div>
+                    <div className="text-base font-medium leading-6 dark:text-white">
+                      <Link
+                        href={`/blog/${slug}`}
+                        aria-label={`Read "${title}"`}
+                      >
+                        Read more &rarr;
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </li>
+          )
+        })}
+      </ul>
+      {posts.length > MAX_DISPLAY && (
+        <div className="flex justify-end text-base font-medium leading-6 dark:text-white">
+          <Link href="/blog" aria-label="all posts">
+            All Posts &rarr;
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      )}
+    </Layout>
+  )
 }
