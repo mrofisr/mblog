@@ -8,9 +8,9 @@ const config = {
     favIcon: "/static/images/favicon.png",
     page: {
         index: {
-            header: "Home 🏠 - @mrofisr",
-            title: "Hi, I'm Rofi 👋",
-            subtitle: "I'm a Student and Indie Wannabe 🌇",
+            header: "Projects 📚 - @mrofisr",
+            title: "Projects 📚",
+            subtitle: "A selection of projects I've worked on",
         },
         blog: {
             header: "Blog ✍️ - @mrofisr",
@@ -23,9 +23,9 @@ const config = {
             subtitle: "A spesific categories to make your search easier",
         },
         project: {
-            header: "Projects 📚 - @mrofisr",
-            title: "Projects 📚",
-            subtitle: "A selection of projects I've worked on",
+            header: "Home 🏠 - @mrofisr",
+            title: "Hi, I'm Rofi 👋",
+            subtitle: "I'm a Software Engineer 🌇",
         },
     },
 };

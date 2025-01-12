@@ -7,9 +7,9 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 
 export default function Tags() {
-    const [tags, setTags] = useState < Record < string > ({})
+    const [tags, setTags] = useState({})
     const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState < string | null > (null)
+    const [error, setError] = useState()
 
     useEffect(() => {
         async function loadTags() {

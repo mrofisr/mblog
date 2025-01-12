@@ -1,13 +1,14 @@
-import Link from "next/link";
-import formatDate from "@/lib/utils/formatDate";
-import Layout from "@/components/custom/layout";
+// components/custom/simple-post.js
+import Link from "next/link"
+import formatDate from "@/lib/format-date"
+import Layout from "@/components/custom/layout"
 
 export default function SimplePost({ frontMatter, next, prev, children }) {
-    const { date, title, desc, image } = frontMatter;
+    const { date, title, desc } = frontMatter
 
     return (
         <Layout title={`${title} - @mrofisr`} description={desc}>
-            <article>
+            <article className="max-w-none">
                 <div>
                     <header>
                         <div className="space-y-1 text-center border-b border-gray-200 dark:border-gray-700">
@@ -25,7 +26,7 @@ export default function SimplePost({ frontMatter, next, prev, children }) {
                         </div>
                     </header>
                     <div
-                        className="pb-8 divide-y divide-gray-200 xl:divide-y-0 dark:divide-gray-700 "
+                        className="pb-8 divide-y divide-gray-200 xl:divide-y-0 dark:divide-gray-700"
                         style={{ gridTemplateRows: "auto 1fr" }}
                     >
                         <div className="divide-y divide-gray-200 dark:divide-gray-700 xl:pb-0 xl:col-span-3 xl:row-span-2">
@@ -34,14 +35,17 @@ export default function SimplePost({ frontMatter, next, prev, children }) {
                             </div>
                         </div>
                         <footer>
-                            <div className="flex flex-col text-sm font-medium sm:flex-row sm:justify-between sm:text-base">
+                            <nav className="flex flex-col text-sm font-medium sm:flex-row sm:justify-between sm:text-base">
                                 {prev && (
                                     <div className="pt-4 xl:pt-8">
                                         <Link
                                             href={`/blog/${prev.slug}`}
                                             className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                                         >
-                                            &larr; {prev.title}
+                                            <span aria-hidden="true">&larr;</span>
+                                            {' '}
+                                            <span className="sr-only">Previous post:</span>
+                                            {prev.title}
                                         </Link>
                                     </div>
                                 )}
@@ -51,15 +55,18 @@ export default function SimplePost({ frontMatter, next, prev, children }) {
                                             href={`/blog/${next.slug}`}
                                             className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                                         >
-                                            {next.title} &rarr;
+                                            <span className="sr-only">Next post:</span>
+                                            {next.title}
+                                            {' '}
+                                            <span aria-hidden="true">&rarr;</span>
                                         </Link>
                                     </div>
                                 )}
-                            </div>
+                            </nav>
                         </footer>
                     </div>
                 </div>
             </article>
         </Layout>
-    );
+    )
 }

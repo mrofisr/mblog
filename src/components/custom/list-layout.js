@@ -75,9 +75,11 @@ export default function ListLayout({
                     </dl>
                     <div className="space-y-3 xl:col-span-3">
                       <div>
-                        <h3 className="text-2xl hover:underline text-yellow-600 dark:text-yellow-400 font-bold leading-8 tracking-tight">
-                          <Link href={`/blog/${slug}`}>{title}</Link>
-                        </h3>
+                      <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 leading-7 tracking-tight transition-colors duration-200">
+                          <Link href={`/blog/${slug}`} className="group-hover:text-gray-600 dark:group-hover:text-gray-300">
+                            {title}
+                          </Link>
+                        </h2>
                         <div className="flex flex-wrap mt-1">
                           {tags.map((tag) => (
                             <Tag key={tag} text={tag} />
