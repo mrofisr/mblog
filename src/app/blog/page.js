@@ -6,13 +6,11 @@ import { getAllFilesFrontMatter } from "@/lib/mdx"
 
 const POSTS_PER_PAGE = 10
 
-// Metadata configuration using Next.js 15 metadata API
 export const metadata = {
   title: config.page.blog.title,
   description: config.page.blog.subtitle,
 }
 
-// Data fetching function
 async function getBlogPosts() {
   const posts = await getAllFilesFrontMatter("posts")
   const initialDisplayPosts = posts.slice(0, POSTS_PER_PAGE)
@@ -33,9 +31,9 @@ export default async function BlogPage() {
 
   return (
     <Layout>
-      <Title 
-        title={config.page.blog.title} 
-        subtitle={config.page.blog.subtitle} 
+      <Title
+        title={config.page.blog.title}
+        subtitle={config.page.blog.subtitle}
       />
       <ListLayout
         posts={posts}

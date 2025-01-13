@@ -1,3 +1,4 @@
+// src/app/page.js
 import Layout from "@/components/custom/layout"
 import Tag from "@/components/custom/tag"
 import Title from "@/components/custom/title"

@@ -9,7 +9,7 @@ const root = process.cwd()
 export async function getAllTags(type) {
     const files = await getFiles(type)
     let tagCount = {}
-    
+
     files.forEach((file) => {
         const source = fs.readFileSync(path.join(root, type, file), 'utf8')
         const { data } = matter(source)

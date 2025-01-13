@@ -1,4 +1,6 @@
 // components/custom/simple-post.js
+'use client'
+
 import Link from "next/link"
 import formatDate from "@/lib/format-date"
 import Layout from "@/components/custom/layout"
