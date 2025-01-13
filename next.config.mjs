@@ -18,6 +18,7 @@ const withMDX = createMDX({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx'],
+  serverExternalPackages: ['elysia'],
   transpilePackages: ['next-mdx-remote'],
   experimental: {
     optimizeCss: true,

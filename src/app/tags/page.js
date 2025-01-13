@@ -3,14 +3,16 @@ import Title from "@/components/custom/title"
 import kebabCase from "@/lib/kebab-case"
 import config from "@/config/config"
 import Link from "next/link"
-import { getAllTags } from '@/lib/tags'
+import { getAllTags } from "@/lib/tags"
 
-// For App Router, we make the default component async
+async function getTags() {
+    const posts = await getAllTags("posts")
+    return posts
+}
+
 export default async function Tags() {
-    // Fetch tags directly in the component
-    const tags = await getAllTags('posts')
+    const tags = await getTags()
     const sortedTags = Object.keys(tags).sort((a, b) => tags[b] - tags[a])
-
     return (
         <Layout
             title={config.page.tags.header}
