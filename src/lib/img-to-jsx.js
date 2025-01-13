@@ -1,4 +1,4 @@
-import visit from 'unist-util-visit';
+import { visit } from 'unist-util-visit'
 import sizeOf from 'image-size';
 import fs from 'fs';
 
