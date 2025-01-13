@@ -1,30 +1,33 @@
-import fs from 'fs';
-import path from 'path';
+// src/app/tags/[slug]/page.js
 import Layout from '@/components/custom/layout';
 import Title from '@/components/custom/title';
 import ListLayout from '@/components/custom/list-layout';
-import generateRss from '@/lib/rss';
 import { getAllFilesFrontMatter } from '@/lib/mdx';
 import { getAllTags } from '@/lib/tags';
 import kebabCase from '@/lib/kebab-case';
 import config from '@/config/config';
 
-const root = process.cwd();
-
-export async function getStaticPaths() {
+// Generate static params for all tags
+export async function generateStaticParams() {
   const tags = await getAllTags("posts");
-
-  const paths = Object.keys(tags).map((tag) => ({
-    params: { slug: tag },
+  return Object.keys(tags).map((tag) => ({
+    slug: tag,
   }));
+}
 
+// Metadata configuration
+export async function generateMetadata({ params }) {
+  const { slug } = params;
+  const title = slug[0].toUpperCase() + slug.slice(1).split(" ").join("-");
+  
   return {
-    paths,
-    fallback: false, // false or 'blocking'
+    title: `${slug} - @mrofisr`,
+    description: `${title} - @mrofisr`,
   };
 }
 
-export async function getStaticProps({ params }) {
+// Main page component
+export default async function TagPage({ params }) {
   const { slug } = params;
   const allPosts = await getAllFilesFrontMatter("posts");
 
@@ -34,30 +37,15 @@ export async function getStaticProps({ params }) {
 
   if (filteredPosts.length === 0) {
     console.warn(`No posts available for tag: ${slug}`);
-    return { notFound: true };
+    notFound();
   }
 
-  // Generate RSS feed
-  const rss = generateRss(filteredPosts, `tags/${slug}/feed.xml`);
-  const rssPath = path.join(root, "public", "tags", slug);
-  fs.mkdirSync(rssPath, { recursive: true });
-  fs.writeFileSync(path.join(rssPath, "feed.xml"), rss);
-
-  return {
-    props: {
-      posts: filteredPosts,
-      slug,
-    },
-  };
-}
-
-export default function TagPage({ posts, slug }) {
   const title = slug[0].toUpperCase() + slug.slice(1).split(" ").join("-");
 
   return (
-    <Layout title={`${slug} - @mrofisr`} description={`${title} - @mrofisr`}>
+    <Layout>
       <Title title={slug} subtitle={config.page.tags.subtitle} />
-      <ListLayout posts={posts} title={title} />
+      <ListLayout posts={filteredPosts} title={title} />
     </Layout>
   );
 }
