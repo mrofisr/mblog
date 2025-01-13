@@ -15,7 +15,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "critters": "^0.0.25",
-    "elysia": "^1.2.10",
     "esbuild": "^0.24.2",
     "framer-motion": "^11.17.0",
     "globby": "^14.0.2",
