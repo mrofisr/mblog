@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react'
 import Layout from "@/components/custom/layout"
 import Title from "@/components/custom/title"
 import kebabCase from "@/lib/kebab-case"
 import config from "@/config/config"
 import Link from "next/link"
-import formatDate from "@/lib/format-date"
 import { getAllTags } from "@/lib/tags"
+import * as motion from "motion/react-client"
 
 // Loading Skeleton Component
 const TagsSkeleton = () => (
@@ -29,44 +28,25 @@ const ErrorMessage = ({ message }) => (
     </div>
 )
 
-// TimeStamp Component
-const TimeStamp = ({ timestamp }) => (
-    <div className="mt-8 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-        <p>Current Date and Time (UTC+7): {formatDate(timestamp)}</p>
-    </div>
-)
-
-// Function to fetch tags
-async function getTags() {
-    const tags = await getAllTags("posts")
-    return tags
+// Metadata configuration using Next.js 15 metadata API
+export const metadata = {
+    title: config.page.tags.header,
+    description: `${config.page.tags.title} - ${config.page.tags.subtitle}`,
 }
 
-export default function Tags() {
-    const [tags, setTags] = useState(null)
-    const [error, setError] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [timestamp, setTimestamp] = useState(null)
+// Data fetching using Next.js 15 Server Components
+async function getTags() {
+    try {
+        const tags = await getAllTags("posts")
+        return { tags, error: null }
+    } catch (error) {
+        return { tags: null, error: "Failed to load tags" }
+    }
+}
 
-    useEffect(() => {
-        async function fetchTags() {
-            try {
-                const tagsData = await getTags()
-                setTags(tagsData)
-                setTimestamp(new Date().toISOString())
-            } catch (error) {
-                setError("Failed to load tags")
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchTags()
-    }, [])
-
-    const sortedTags = tags
-        ? Object.keys(tags).sort((a, b) => tags[b] - tags[a])
-        : []
+export default async function Tags() {
+    // Fetch tags directly in the component
+    const { tags, error } = await getTags()
 
     return (
         <Layout
@@ -78,11 +58,11 @@ export default function Tags() {
                 subtitle={config.page.tags.subtitle}
             />
 
-            {loading ? (
-                <TagsSkeleton />
-            ) : error ? (
+            {error ? (
                 <ErrorMessage message={error} />
-            ) : sortedTags.length === 0 ? (
+            ) : !tags ? (
+                <TagsSkeleton />
+            ) : Object.keys(tags).length === 0 ? (
                 <div className="my-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                     <p className="text-yellow-600 dark:text-yellow-400">
                         No tags found.
@@ -90,34 +70,39 @@ export default function Tags() {
                 </div>
             ) : (
                 <div className="my-3 flex flex-wrap -m-1">
-                    {sortedTags.map((tag) => (
-                        <Link
-                            key={tag}
-                            href={`/tags/${kebabCase(tag)}`}
-                            className="group m-1 bg-gray-300 hover:bg-gray-400 
-                                     dark:bg-gray-700 dark:hover:bg-gray-600 
-                                     rounded-full px-3 py-1 font-medium text-sm 
-                                     leading-loose cursor-pointer transition-all 
-                                     duration-200 hover:scale-105"
-                        >
-                            <span className="group-hover:text-gray-900 
-                                         dark:group-hover:text-white">
-                                {tag}
-                            </span>{" "}
-                            <span className="text-gray-600 dark:text-gray-400 
-                                         group-hover:text-gray-700 
-                                         dark:group-hover:text-gray-300">
-                                ({tags[tag]})
-                            </span>
-                        </Link>
-                    ))}
+                    {Object.keys(tags)
+                        .sort((a, b) => tags[b] - tags[a])
+                        .map((tag) => (
+                            <motion.div
+                                key={tag}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <Link
+                                    href={`/tags/${kebabCase(tag)}`}
+                                    className="group m-1 bg-gray-300 hover:bg-gray-400 
+                                             dark:bg-gray-700 dark:hover:bg-gray-600 
+                                             rounded-full px-3 py-1 font-medium text-sm 
+                                             leading-loose cursor-pointer transition-all 
+                                             duration-200 hover:scale-105 inline-block"
+                                >
+                                    <motion.span
+                                        className="group-hover:text-gray-900 
+                                                 dark:group-hover:text-white"
+                                        whileHover={{ scale: 1.02 }}
+                                    >
+                                        {tag}
+                                    </motion.span>{" "}
+                                    <span className="text-gray-600 dark:text-gray-400 
+                                                 group-hover:text-gray-700 
+                                                 dark:group-hover:text-gray-300">
+                                        ({tags[tag]})
+                                    </span>
+                                </Link>
+                            </motion.div>
+                        ))}
                 </div>
-            )}
-
-            {!loading && !error && (
-                <TimeStamp 
-                    timestamp={timestamp} 
-                />
             )}
         </Layout>
     )
