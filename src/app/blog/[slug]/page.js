@@ -15,9 +15,11 @@ import {
 
 // Page component with built-in data fetching
 export default async function Blog({ params }) {
+    const { slug } = params;
     const allPosts = await getAllFilesFrontMatter("posts")
+    console.log(slug)
     const postIndex = allPosts.findIndex(
-        (post) => formatSlug(post.slug) === params.slug.join("/")
+        (post) => formatSlug(post.slug) === slug.join("/")
     )
     
     const prev = allPosts[postIndex + 1] || null
