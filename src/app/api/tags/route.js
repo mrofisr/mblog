@@ -1,6 +1,7 @@
 // src/app/api/tags/route.js
 import { NextResponse } from 'next/server'
 import { getAllTags } from '@/lib/tags'
+import formatDate from "@/lib/format-date"
 
 function getCurrentUTCDateTime() {
     return new Date().toISOString().replace('T', ' ').slice(0, 19)
@@ -11,14 +12,14 @@ export async function GET() {
         const tags = await getAllTags('posts')
         return NextResponse.json({
             success: true,
-            timestamp: getCurrentUTCDateTime(),
+            timestamp: formatDate(getCurrentUTCDateTime()),
             userLogin: 'mrofisr',
             data: tags
         })
     } catch (error) {
         return NextResponse.json({
             success: false,
-            timestamp: getCurrentUTCDateTime(),
+            timestamp: formatDate(getCurrentUTCDateTime()),
             userLogin: 'mrofisr',
             error: error.message
         }, { status: 500 })
