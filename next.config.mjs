@@ -20,7 +20,38 @@ const nextConfig = {
   },
   images: {
     unoptimized: false
-  }
+  },
+  webpack: (config, { dev, isServer }) => {
+    // Optimize webpack config for MDX
+    config.module.rules.push({
+      test: /\.mdx?$/,
+      use: [
+        // This should come after any other loaders
+        {
+          loader: '@mdx-js/loader',
+          options: {
+            remarkPlugins: [remarkGfm, remarkMath],
+            rehypePlugins: [
+              rehypeSlug,
+              rehypeAutolinkHeadings,
+              rehypeKatex,
+              [rehypePrismPlus, { ignoreMissing: true }]
+            ],
+          }
+        }
+      ]
+    })
+
+    if (!dev && !isServer) {
+      // Enable memory cache in production
+      config.cache = {
+        type: 'memory',
+        maxGenerations: 1,
+      }
+    }
+
+    return config
+  },
 }
 
 const withMDX = createMDX({
