@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import dynamic from 'next/dynamic'
 import { getMDXComponent } from 'mdx-bundler/client'
+import dynamic from 'next/dynamic'
 import PropTypes from 'prop-types'
 import Image from '@/components/custom/image'
 import Pre from '@/components/custom/pre'
