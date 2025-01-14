@@ -4,8 +4,8 @@ import Title from "@/components/custom/title"
 import kebabCase from "@/lib/kebab-case"
 import config from "@/config/config"
 import Link from "next/link"
-import { useEffect, useState } from "react"
 import formatDate from "@/lib/format-date"
+import { getAllTags } from "@/lib/tags"
 
 // Loading Skeleton Component
 const TagsSkeleton = () => (
@@ -36,43 +36,17 @@ const TimeStamp = ({ timestamp }) => (
     </div>
 )
 
-export default function Tags() {
-    const [state, setState] = useState({
-        tagsData: null,
-        loading: true,
-        error: null,
-        timestamp: null,
-        userLogin: null
-    })
+// Data fetching using Next.js 15 Server Components
+async function getTags() {
+    const tags = await getAllTags("posts")
+    return tags
+  }
+  
 
-    useEffect(() => {
-        fetch('/api/tags')
-            .then(res => res.json())
-            .then(response => {
-                if (response.success && response.data) {
-                    setState({
-                        tagsData: response.data,
-                        loading: false,
-                        error: null,
-                        timestamp: response.timestamp,
-                        userLogin: response.userLogin
-                    })
-                } else {
-                    throw new Error(response.error || 'Failed to load tags')
-                }
-            })
-            .catch((error) => {
-                console.error('Error fetching tags:', error)
-                setState(prev => ({
-                    ...prev,
-                    loading: false,
-                    error: error.message
-                }))
-            })
-    }, [])
-
-    const sortedTags = state.tagsData 
-        ? Object.keys(state.tagsData).sort((a, b) => state.tagsData[b] - state.tagsData[a])
+export default async function Tags() {
+    const tags = await getTags()
+    const sortedTags = tags
+        ? Object.keys(tags).sort((a, b) => tags[b] - tags[a])
         : []
 
     return (
