@@ -5,26 +5,21 @@ import {
     getFileBySlug,
 } from "@/lib/mdx"
 
-// Replace getStaticPaths with generateStaticParams
-// export async function generateStaticParams() {
-//     const posts = getFiles("posts")
-//     return posts.map((post) => ({
-//         slug: formatSlug(post).split("/"),
-//     }))
-// }
-
 // Page component with built-in data fetching
 export default async function Blog({ params }) {
-    const { slug } = params;
+    const { slug } = params
     const allPosts = await getAllFilesFrontMatter("posts")
-    console.log(slug)
+    
+    // If slug is an array, join it, otherwise use it as is
+    const formattedSlug = Array.isArray(slug) ? slug.join("/") : slug
+    
     const postIndex = allPosts.findIndex(
-        (post) => formatSlug(post.slug) === slug.join("/")
+        (post) => formatSlug(post.slug) === formattedSlug
     )
     
     const prev = allPosts[postIndex + 1] || null
     const next = allPosts[postIndex - 1] || null
-    const post = await getFileBySlug("posts", params.slug.join("/"))
+    const post = await getFileBySlug("posts", formattedSlug)
     
     const { mdxSource, frontMatter } = post
     

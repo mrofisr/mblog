@@ -33,7 +33,7 @@ async function getBlogPosts(tag) {
 }
 
 export default async function TagPage({ params }) {
-    const tag = params.tag
+    const { tag } = params
     const { posts, initialDisplayPosts, pagination } = await getBlogPosts(tag)
 
     return (
