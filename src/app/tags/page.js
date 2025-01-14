@@ -1,4 +1,4 @@
-"use client"
+import { useEffect, useState } from 'react'
 import Layout from "@/components/custom/layout"
 import Title from "@/components/custom/title"
 import kebabCase from "@/lib/kebab-case"
@@ -36,15 +36,34 @@ const TimeStamp = ({ timestamp }) => (
     </div>
 )
 
-// Data fetching using Next.js 15 Server Components
+// Function to fetch tags
 async function getTags() {
     const tags = await getAllTags("posts")
     return tags
-  }
-  
+}
 
-export default async function Tags() {
-    const tags = await getTags()
+export default function Tags() {
+    const [tags, setTags] = useState(null)
+    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [timestamp, setTimestamp] = useState(null)
+
+    useEffect(() => {
+        async function fetchTags() {
+            try {
+                const tagsData = await getTags()
+                setTags(tagsData)
+                setTimestamp(new Date().toISOString())
+            } catch (error) {
+                setError("Failed to load tags")
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchTags()
+    }, [])
+
     const sortedTags = tags
         ? Object.keys(tags).sort((a, b) => tags[b] - tags[a])
         : []
@@ -59,10 +78,10 @@ export default async function Tags() {
                 subtitle={config.page.tags.subtitle}
             />
 
-            {state.loading ? (
+            {loading ? (
                 <TagsSkeleton />
-            ) : state.error ? (
-                <ErrorMessage message={state.error} />
+            ) : error ? (
+                <ErrorMessage message={error} />
             ) : sortedTags.length === 0 ? (
                 <div className="my-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                     <p className="text-yellow-600 dark:text-yellow-400">
@@ -88,17 +107,16 @@ export default async function Tags() {
                             <span className="text-gray-600 dark:text-gray-400 
                                          group-hover:text-gray-700 
                                          dark:group-hover:text-gray-300">
-                                ({state.tagsData[tag]})
+                                ({tags[tag]})
                             </span>
                         </Link>
                     ))}
                 </div>
             )}
 
-            {!state.loading && !state.error && (
+            {!loading && !error && (
                 <TimeStamp 
-                    timestamp={state.timestamp} 
-                    userLogin={state.userLogin}
+                    timestamp={timestamp} 
                 />
             )}
         </Layout>
