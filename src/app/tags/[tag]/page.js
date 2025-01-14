@@ -4,7 +4,6 @@ import Title from "@/components/custom/title"
 import config from "@/config/config"
 import { getAllFilesFrontMatter } from "@/lib/mdx"
 import kebabCase from "@/lib/kebab-case"
-import formatDate from "@/lib/format-date"
 
 const POSTS_PER_PAGE = 10
 

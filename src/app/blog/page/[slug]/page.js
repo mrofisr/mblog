@@ -3,7 +3,7 @@ import Title from "@/components/custom/title";
 import { getAllFilesFrontMatter } from "@/lib/mdx";
 import ListLayout from "@/components/custom/list-layout";
 
-const POSTS_PER_PAGE = 5;
+const POSTS_PER_PAGE = 10;
 
 export async function generateStaticParams() {
   const totalPosts = await getAllFilesFrontMatter("posts");
