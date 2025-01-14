@@ -6,30 +6,34 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeKatex from 'rehype-katex'
 import rehypePrismPlus from 'rehype-prism-plus'
 
-const withMDX = createMDX({
-  extension: /\.mdx?$/,
-  options: {
-    // Ensure plugins are passed as plain arrays
-    remarkPlugins: [remarkGfm, remarkMath],
-    rehypePlugins: [rehypeSlug, rehypeAutolinkHeadings, rehypeKatex, rehypePrismPlus],
-  },
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ['js', 'jsx', 'md', 'mdx'],
+  pageExtensions: ['js', 'jsx', 'mdx'],
   reactStrictMode: true,
   transpilePackages: ['next-mdx-remote'],
-  compiler:
-  {
+  compiler: {
     removeConsole: process.env.NODE_ENV === 'production'
   },
   experimental: {
     optimizeCss: true,
+    mdxRs: true, // Enable the new RSC-compatible MDX implementation
   },
   images: {
     unoptimized: false
   }
 }
+
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [remarkGfm, remarkMath],
+    rehypePlugins: [
+      rehypeSlug,
+      rehypeAutolinkHeadings,
+      rehypeKatex,
+      [rehypePrismPlus, { ignoreMissing: true }]
+    ],
+    providerImportSource: "@mdx-js/react"
+  }
+})
 
 export default withMDX(nextConfig)
