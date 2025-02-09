@@ -16,7 +16,6 @@ async function getBlogPosts(tag) {
     const posts = await getAllFilesFrontMatter("posts")
     const filteredPosts = posts.filter(
         (post) =>
-            post.draft !== true &&
             post.tags.map((t) => kebabCase(t)).includes(tag)
     )
     const initialDisplayPosts = filteredPosts.slice(0, POSTS_PER_PAGE)
@@ -33,8 +32,8 @@ async function getBlogPosts(tag) {
 }
 
 export default async function TagPage({ params }) {
-    const { tag } = params
-    const { posts, initialDisplayPosts, pagination } = await getBlogPosts(tag)
+    const { slug } = await params
+    const { posts, initialDisplayPosts, pagination } = await getBlogPosts(slug)
 
     return (
         <Layout>

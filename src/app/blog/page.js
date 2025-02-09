@@ -26,7 +26,7 @@ async function getBlogPosts() {
   }
 }
 
-export default async function BlogPage() {
+export default async function Blogs() {
   const { posts, initialDisplayPosts, pagination } = await getBlogPosts()
 
   return (

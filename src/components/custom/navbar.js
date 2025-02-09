@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
 import { Sun, Moon } from "lucide-react"
 import { useTheme } from "next-themes"
+import config from "@/config/config"
 
 const links = [
   {
@@ -51,7 +52,7 @@ export default function Navbar() {
           href="/" 
           className="text-lg font-extrabold tracking-tight hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
         >
-          Blog
+          {config.blogName}
         </Link>
 
         <div className="flex items-center gap-4">

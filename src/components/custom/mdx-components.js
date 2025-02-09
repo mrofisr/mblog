@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo } from 'react'
 import { getMDXComponent } from 'mdx-bundler/client'
 import dynamic from 'next/dynamic'
@@ -8,7 +10,13 @@ import Link from 'next/link'
 
 // Dynamically import with loading state
 const SimplePost = dynamic(() => import('@/components/custom/simple-post'), {
-  loading: () => <div>Loading...</div>
+  loading: () => {
+    return (<>
+      <div className="flex justify-center items-center h-screen">
+        <span className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"/>
+      </div>
+    </>)
+  }
 })
 
 export const MDXComponents = {
@@ -28,8 +36,10 @@ export const MDXComponents = {
 
 export const MDXLayoutRenderer = ({ mdxSource, ...rest }) => {
   const MDXContent = useMemo(() => {
+    if (!mdxSource) return null
+
     try {
-      return mdxSource ? getMDXComponent(mdxSource) : null
+      return getMDXComponent(mdxSource)
     } catch (error) {
       console.error('Error creating MDX component:', error)
       return null

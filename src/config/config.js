@@ -1,4 +1,5 @@
 const config = {
+    blogName: "My Personal Blog",
     title: "My Personal Blog",
     author: "Abdur Rofi - @mrofisr",
     headerTitle: "My Personal Blog",
