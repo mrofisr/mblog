@@ -1,17 +1,26 @@
+import createMDX from '@next/mdx'
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+  extension: /\.mdx?$/,
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   webpack: (
     config,
-    { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
+    { dev }
   ) => {
     if (config.cache && !dev) {
       config.cache = Object.freeze({
         type: 'memory',
       })
     }
-    // Important: return the modified config
     return config
   },
 }
- 
-export default nextConfig
+
+export default withMDX(nextConfig)

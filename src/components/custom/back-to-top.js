@@ -1,41 +1,49 @@
 import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const BackToTop = () => {
-    const [scrollProgress, setScrollProgress] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+    const threshold = 100; // Show button after scrolling 100px
 
-    // Update scroll progress
-    const updateScrollProgress = () => {
-        const scrollPx = document.documentElement.scrollTop;
-        const winHeightPx =
-            document.documentElement.scrollHeight -
-            document.documentElement.clientHeight;
-        const scrolled = (scrollPx / winHeightPx) * 100;
-        
-        setScrollProgress(scrolled);
-    };
+    // Memoized scroll handler using useCallback
+    const handleScroll = useCallback(() => {
+        const currentScrollY = window.scrollY;
+        setIsVisible(currentScrollY > threshold);
+    }, []);
 
-    // Smooth scroll to top without blocking state
-    const scrollToTop = () => {
+    // Memoized scroll to top function
+    const scrollToTop = useCallback(() => {
         window.scrollTo({
             top: 0,
             behavior: "smooth",
         });
-    };
+    }, []);
 
     useEffect(() => {
-        window.addEventListener("scroll", updateScrollProgress);
-        return () => {
-            window.removeEventListener("scroll", updateScrollProgress);
-        };
-    }, []);
+        window.addEventListener("scroll", handleScroll);
+        // Initial check
+        handleScroll();
+
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [handleScroll]);
+
+    if (!isVisible) return null;
 
     return (
         <Button
             onClick={scrollToTop}
-            className={`fixed bottom-4 right-4 z-50 rounded-full p-3 shadow-lg bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-white hover:scale-110 border border-gray-300 dark:border-gray-700 transition-opacity duration-300 ${scrollProgress === 0 ? 'opacity-0' : 'opacity-100'}`}
+            className={`
+                fixed bottom-4 right-4 z-50 
+                rounded-full p-3 shadow-lg 
+                bg-white dark:bg-gray-800 
+                text-black dark:text-white 
+                hover:bg-white hover:scale-110 
+                border border-gray-300 dark:border-gray-700 
+                transition-all duration-300
+            `}
             size="icon"
+            aria-label="Scroll to top"
         >
             <ArrowUp className="h-4 w-4" />
         </Button>

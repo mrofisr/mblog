@@ -26,7 +26,7 @@ const config = {
         project: {
             header: "Home 🏠 - @mrofisr",
             title: "Hi, I'm Rofi 👋",
-            subtitle: "I'm a Software Engineer 🌇",
+            subtitle: "I'm a Muslim in Tech, a Fullstuck Developer, and a Lifelong Learner.",
         },
     },
 };

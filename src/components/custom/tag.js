@@ -7,20 +7,22 @@ const Tag = ({ text }) => {
       href={`/tags/${kebabCase(text)}`}
       className="
         inline-flex items-center
-        px-2 py-0.5
-        mr-2 mb-2
-        text-sm
-        rounded-md
-        bg-gray-100 dark:bg-gray-800
+        px-3 py-1
+        mr-3 mb-3
+        text-sm font-medium
+        rounded-full
+        bg-gray-50 dark:bg-gray-900/30
         text-gray-600 dark:text-gray-300
-        border border-gray-200 dark:border-gray-700
-        transition-all duration-200
-        hover:bg-gray-200 dark:hover:bg-gray-700
+        border border-gray-200 dark:border-gray-800
+        transition-all duration-300
+        hover:bg-gray-100 dark:hover:bg-gray-800
+        hover:scale-105
         active:scale-95
+        shadow-sm
         select-none
       "
     >
-      {text.split(' ').join('-')}
+      #{text}
     </Link>
   )
 }

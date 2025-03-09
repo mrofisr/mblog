@@ -21,6 +21,7 @@ const BlogPageAnalytics = () => {
     }, []);
     return null;
 }
+
 const AboutPageAnalytics = () => {
     useEffect(() => {
         trackEvent("AboutPageView", { page: "About" });

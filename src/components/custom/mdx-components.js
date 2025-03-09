@@ -8,7 +8,11 @@ import { MDXRemote } from 'next-mdx-remote'
 import { Suspense } from 'react'
 import { BlogLayout } from '@/components/ui/blog-card'
 
-// Custom MDX components mapping
+// Define base styles as constants for reusability
+const SCROLL_MARGIN = 'scroll-m-10'
+const BASE_SPACING = 'my-4'
+
+// Custom MDX components mapping with improved organization
 export const mdxComponents = {
   Image,
   pre: ({ className, ...props }) => (
@@ -22,37 +26,46 @@ export const mdxComponents = {
     />
   ),
   h1: ({ className, ...props }) => (
-    <h1 className={cn('scroll-m-10 text-4xl font-bold tracking-tight', className)} {...props} />
+    <h1 className={cn(`${SCROLL_MARGIN} text-4xl font-bold tracking-tight`, className)} {...props} />
   ),
   h2: ({ className, ...props }) => (
-    <h2 className={cn('scroll-m-10 text-3xl font-semibold tracking-tight', className)} {...props} />
+    <h2 className={cn(`${SCROLL_MARGIN} text-3xl font-semibold tracking-tight`, className)} {...props} />
   ),
   h3: ({ className, ...props }) => (
-    <h3 className={cn('scroll-m-10 text-2xl font-semibold tracking-tight', className)} {...props} />
+    <h3 className={cn(`${SCROLL_MARGIN} text-2xl font-semibold tracking-tight`, className)} {...props} />
   ),
   p: ({ className, ...props }) => (
     <p className={cn('leading-7 [&:not(:first-child)]:mt-4', className)} {...props} />
   ),
   ul: ({ className, ...props }) => (
-    <ul className={cn('my-4 ml-6 list-disc', className)} {...props} />
+    <ul className={cn(`${BASE_SPACING} ml-6 list-disc`, className)} {...props} />
   ),
   ol: ({ className, ...props }) => (
-    <ol className={cn('my-4 ml-6 list-decimal', className)} {...props} />
+    <ol className={cn(`${BASE_SPACING} ml-6 list-decimal`, className)} {...props} />
   ),
   blockquote: ({ className, ...props }) => (
     <blockquote className={cn('mt-4 border-l-2 pl-6 italic', className)} {...props} />
   ),
   a: ({ href = '', children, className, ...props }) => {
     const isInternal = href.startsWith('/') || href.startsWith('#')
-    const Component = isInternal ? Link : 'a'
-    return (
-      <Component
+    return isInternal ? (
+      <Link
         href={href}
         className={cn('font-medium underline underline-offset-4', className)}
-        {...(isInternal ? props : { target: '_blank', rel: 'noopener noreferrer', ...props })}
+        {...props}
       >
         {children}
-      </Component>
+      </Link>
+    ) : (
+      <a
+        href={href}
+        className={cn('font-medium underline underline-offset-4', className)}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...props}
+      >
+        {children}
+      </a>
     )
   },
   code: ({ className, ...props }) => (
@@ -66,7 +79,6 @@ export const mdxComponents = {
   )
 }
 
-// MDX for blog pages using a layout component
 export function MDXContent({ mdxSource, frontMatter }) {
   if (!mdxSource) return null
 
@@ -79,9 +91,15 @@ export function MDXContent({ mdxSource, frontMatter }) {
   )
 }
 
-// MDX wrapper for standalone MDX rendering with Suspense fallback
 export function MDXWrapper({ source, frontmatter }) {
   if (!source) return null
+
+  const mdxOptions = {
+    parseFrontmatter: true,
+    mdxOptions: {
+      development: process.env.NODE_ENV === 'development'
+    }
+  }
 
   return (
     <div suppressHydrationWarning>
@@ -90,12 +108,7 @@ export function MDXWrapper({ source, frontmatter }) {
           source={source}
           components={mdxComponents}
           frontmatter={frontmatter}
-          options={{
-            parseFrontmatter: true,
-            mdxOptions: {
-              development: process.env.NODE_ENV === 'development'
-            }
-          }}
+          options={mdxOptions}
         />
       </Suspense>
     </div>
