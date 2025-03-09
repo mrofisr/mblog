@@ -1,17 +1,12 @@
-"use client";
 
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { initUmami } from "@/lib/umami";
-import { useEffect } from "react";
+import UmamiScript from "@/components/custom/umami";
 
 export default function RootLayout({ children }) {
-  useEffect(() => {
-    initUmami(process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL || "http://localhost:3000/script.js", process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID || "00000000-0000-0000-0000-000000000000");
-  }, []);
-
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
+      <UmamiScript scriptUrl={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL} websiteId={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID} />
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
