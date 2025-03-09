@@ -1,29 +1,36 @@
 'use client'
-import { useState } from 'react'
 
-export default function Pre({ children }) {
-  const [copied, setCopied] = useState(false)
+import { CopyButton } from '@/components/ui/copy-button'
 
-  const onCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(children.props.children)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
-      console.error('Failed to copy code:', error)
-    }
-  }
+export default function Pre({ children, className, ...props }) {
+  // Get the raw code as a string
+  const code = children?.props?.children
+  const lines = typeof code === 'string' ? code.split('\n') : []
 
   return (
-    <div className="relative">
-      <button
-        aria-label="Copy code"
-        className="absolute right-2 top-2 rounded bg-gray-700 p-1 text-sm text-gray-200"
-        onClick={onCopy}
+    <div className="group relative">
+      <pre
+        className={`relative overflow-auto bg-gray-100 dark:bg-[#282a36] p-4 rounded ${className}`}
+        {...props}
       >
-        {copied ? 'Copied!' : 'Copy'}
-      </button>
-      <pre>{children}</pre>
+        <code className="flex">
+          {/* Line numbers column */}
+          <span className="select-none text-gray-500 dark:text-[#6272a4] pr-4 text-sm" aria-hidden="true">
+            {lines.map((_, i) => (
+              <div key={i} className="py-0.5">{i + 1}</div>
+            ))}
+          </span>
+          {/* Code lines with adaptive text color */}
+          <span className="space-y-0.5 text-gray-800 dark:text-white">
+            {lines.map((line, i) => (
+              <div key={i}>
+                {line}
+              </div>
+            ))}
+          </span>
+        </code>
+      </pre>
+      {code && <CopyButton value={code} />}
     </div>
   )
 }

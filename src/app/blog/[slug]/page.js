@@ -1,38 +1,53 @@
-import { MDXLayoutRenderer } from "@/components/custom/mdx-components"
-import {
-    formatSlug,
-    getAllFilesFrontMatter,
-    getFileBySlug,
-} from "@/lib/mdx"
+import { MDXContent } from '@/components/custom/mdx-components'
+import { getAllFilesFrontMatter, getFileBySlug } from "@/lib/mdx"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
-// Page component with built-in data fetching
+export async function generateStaticParams() {
+    const posts = await getAllFilesFrontMatter("posts")
+    return posts.map((post) => ({
+        slug: post.slug,
+    }))
+}
+
 export default async function Blog({ params }) {
+    // Await the params before using them 
     const { slug } = await params
-    const allPosts = await getAllFilesFrontMatter("posts")
-    
-    // If slug is an array, join it, otherwise use it as is
-    const formattedSlug = Array.isArray(slug) ? slug.join("/") : slug
-    
-    const postIndex = allPosts.findIndex(
-        (post) => formatSlug(post.slug) === formattedSlug
-    )
-    
-    const prev = allPosts[postIndex + 1] || null
-    const next = allPosts[postIndex - 1] || null
-    
-    try {
-        const post = await getFileBySlug("posts", formattedSlug)
-        const { mdxSource, frontMatter } = post
+
+    if (!slug) {
         return (
-            <MDXLayoutRenderer
-                mdxSource={mdxSource}
-                frontMatter={frontMatter}
-                prev={prev}
-                next={next}
-            />
+            <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>Invalid blog post URL</AlertDescription>
+            </Alert>
+        )
+    }
+
+    try {
+        const rawSlug = Array.isArray(slug) ? slug.join('/') : slug
+        const { mdxSource, frontMatter } = await getFileBySlug('posts', rawSlug)
+
+        if (!mdxSource) {
+            return (
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Not Found</AlertTitle>
+                    <AlertDescription>Blog post content not found</AlertDescription>
+                </Alert>
+            )
+        }
+
+        return (
+            <MDXContent mdxSource={mdxSource} frontMatter={frontMatter} />
         )
     } catch (error) {
-        console.error('Error processing MDX:', error)
-        return <div>Error loading post content</div>
+        return (
+            <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>Failed to load blog post</AlertDescription>
+            </Alert>
+        )
     }
 }

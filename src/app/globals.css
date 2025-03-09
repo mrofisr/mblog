@@ -71,6 +71,89 @@ body {
   }
 }
 
+@layer components {
+  .copy-button {
+    @apply opacity-0 transition-opacity duration-100;
+  }
+  
+  .group:hover .copy-button {
+    @apply opacity-100;
+  }
+  
+  pre:hover .copy-button {
+    @apply opacity-100;
+  }
+  
+  .prose {
+    max-width: 65ch;
+    margin: 0 auto;
+  }
+  
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+  }
+  
+  .prose p {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    line-height: 1.8;
+  }
+  
+  .prose img {
+    border-radius: theme('borderRadius.lg');
+    margin: 2em 0;
+  }
+  
+  .prose blockquote {
+    font-style: italic;
+    border-left-width: 0.25rem;
+    border-left-color: theme('colors.gray.200');
+    margin: 2em 0;
+    padding-left: 1.5em;
+  }
+  
+  .dark .prose blockquote {
+    border-left-color: theme('colors.gray.700');
+  }
+}
+
+/* Add syntax highlighting theme */
+pre[class*="language-"] {
+  @apply bg-muted;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  @apply text-muted-foreground;
+}
+
+.token.function,
+.token.keyword,
+.token.selector {
+  @apply text-pink-500 dark:text-pink-400;
+}
+
+.token.string,
+.token.char,
+.token.attr-value {
+  @apply text-green-500 dark:text-green-400;
+}
+
+.token.operator,
+.token.punctuation {
+  @apply text-foreground;
+}
+
+.token.variable,
+.token.property {
+  @apply text-orange-500 dark:text-orange-400;
+}
+
 .prose {
   --tw-prose-body: theme('colors.gray.600');
   --tw-prose-headings: theme('colors.gray.900');
@@ -101,4 +184,32 @@ body {
   --tw-prose-pre-bg: theme('colors.gray.800');
   --tw-prose-bullets: theme('colors.gray.600');
   --tw-prose-hr: theme('colors.gray.700');
+}
+
+.mdx-content {
+  @apply text-foreground;
+}
+
+.mdx-content pre {
+  @apply my-4 overflow-x-auto rounded-lg bg-muted p-4;
+}
+
+.mdx-content code {
+  @apply relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm;
+}
+
+.mdx-content img {
+  @apply rounded-lg border;
+}
+
+.mdx-content table {
+  @apply w-full border-collapse text-sm;
+}
+
+.mdx-content table th {
+  @apply border px-4 py-2 text-left font-bold;
+}
+
+.mdx-content table td {
+  @apply border px-4 py-2;
 }

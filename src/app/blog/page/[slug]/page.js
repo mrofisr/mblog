@@ -32,7 +32,8 @@ async function fetchData(page) {
   };
 }
 
-export default async function PostPage({ params }) {
+export default async function PostPage(props) {
+  const params = await props.params;
   const { page } = params;
   const { posts, initialDisplayPosts, pagination } = await fetchData(page);
 
