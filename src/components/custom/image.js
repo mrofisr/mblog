@@ -1,9 +1,17 @@
 'use client'
 import NextImage from 'next/image'
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
-export default function Image({ src, alt, width, height, ...rest }) {
+const ImageComponent = memo(function ImageComponent({ src, alt, width, height, ...props }) {
   const [isLoading, setLoading] = useState(true)
+
+  const handleLoadComplete = () => setLoading(false)
+
+  const imageClasses = [
+    'duration-700',
+    'ease-in-out',
+    isLoading ? 'scale-110 blur-2xl grayscale' : 'scale-100 blur-0 grayscale-0'
+  ].join(' ')
 
   return (
     <div className="relative">
@@ -12,13 +20,12 @@ export default function Image({ src, alt, width, height, ...rest }) {
         alt={alt}
         width={width}
         height={height}
-        className={`
-          duration-700 ease-in-out
-          ${isLoading ? 'scale-110 blur-2xl grayscale' : 'scale-100 blur-0 grayscale-0'}
-        `}
-        onLoadingComplete={() => setLoading(false)}
-        {...rest}
+        className={imageClasses}
+        onLoadingComplete={handleLoadComplete}
+        {...props}
       />
     </div>
   )
-}
+})
+
+export default ImageComponent

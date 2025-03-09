@@ -34,7 +34,7 @@ export default async function Home() {
         {!posts.length && "No posts found."}
         {posts.slice(0, MAX_DISPLAY).map((frontMatter) => {
           const { slug, date, title, desc, tags } = frontMatter;
-            return (
+          return (
             <motion.li
               key={slug}
               className="py-4"
@@ -43,61 +43,61 @@ export default async function Home() {
               transition={{ duration: 0.3 }}
             >
               <motion.div
-              className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg p-4 transition-all duration-200"
-              whileHover={{ scale: 1.02 }}
+                className="group hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg p-4 transition-all duration-200"
+                whileHover={{ scale: 1.02 }}
               >
-              <div className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
-                <dl>
-                <dt className="sr-only">Published on</dt>
-                <dd className="text-sm text-gray-500 dark:text-gray-400 font-normal">
-                  <time dateTime={date}>{formatDate(date)}</time>
-                </dd>
-                </dl>
-                <div className="space-y-4 xl:col-span-3">
-                <div className="space-y-3">
-                  <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 leading-7 tracking-tight transition-colors duration-200">
-                    <Link href={`/blog/${slug}`} className="group-hover:text-gray-600 dark:group-hover:text-gray-300">
-                    {title}
-                    </Link>
-                  </h2>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {tags.map((tag) => (
-                    <Tag key={tag} text={tag} />
-                    ))}
-                  </div>
-                  </div>
-                  <div className="prose text-gray-500 max-w-none dark:text-gray-400">
-                  {desc}
+                <div className="space-y-2 xl:grid xl:grid-cols-4 xl:space-y-0 xl:items-baseline">
+                  <dl>
+                    <dt className="sr-only">Published on</dt>
+                    <dd className="text-sm text-gray-500 dark:text-gray-400 font-normal">
+                      <time dateTime={date}>{formatDate(date)}</time>
+                    </dd>
+                  </dl>
+                  <div className="space-y-4 xl:col-span-3">
+                    <div className="space-y-3">
+                      <div>
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 leading-7 tracking-tight transition-colors duration-200">
+                          <Link href={`/blog/${slug}`} className="group-hover:text-gray-600 dark:group-hover:text-gray-300">
+                            {title}
+                          </Link>
+                        </h2>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {tags.map((tag) => (
+                            <Tag key={tag} text={tag} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="prose text-gray-500 max-w-none dark:text-gray-400">
+                        {desc}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200">
+                      <Link
+                        href={`/blog/${slug}`}
+                        className="inline-flex items-center group-hover:text-gray-900 dark:group-hover:text-gray-100"
+                        aria-label={`Read "${title}"`}
+                      >
+                        Read more
+                        <svg
+                          className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                          />
+                        </svg>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200">
-                  <Link
-                  href={`/blog/${slug}`}
-                  className="inline-flex items-center group-hover:text-gray-900 dark:group-hover:text-gray-100"
-                  aria-label={`Read "${title}"`}
-                  >
-                  Read more
-                  <svg
-                    className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
-                  </Link>
-                </div>
-                </div>
-              </div>
               </motion.div>
             </motion.li>
-            );
+          );
         })}
       </ul>
       {posts.length > MAX_DISPLAY && (

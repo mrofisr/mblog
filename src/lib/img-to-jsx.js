@@ -1,35 +1,57 @@
 import { visit } from 'unist-util-visit'
-import sizeOf from 'image-size';
-import fs from 'fs';
+import sizeOf from 'image-size'
+import fs from 'fs'
+
+const isHttpUrl = (url) => {
+  try {
+    new URL(url)
+    return url.startsWith('http')
+  } catch {
+    return false
+  }
+}
 
 const plugin = () => (tree) => {
   visit(
     tree,
-    // only visit p tags that contain an img element
-    (node) => node.type === 'paragraph' && node.children.some((n) => n.type === 'image'),
+    (node) => node.type === 'paragraph' && node.children?.some((n) => n.type === 'image'),
     (node) => {
-      const imageNode = node.children.find((n) => n.type === 'image');
+      const imageNode = node.children.find((n) => n.type === 'image')
 
-      // only local files
-      if (fs.existsSync(`${process.cwd()}/public${imageNode.url}`)) {
-        const dimensions = sizeOf(`${process.cwd()}/public${imageNode.url}`);
+      if (!imageNode) return
 
-        // Convert original node to next/image
-        imageNode.type = 'mdxJsxFlowElement';
-        imageNode.name = 'Image';
-        imageNode.attributes = [
-          { type: 'mdxJsxAttribute', name: 'alt', value: imageNode.alt },
-          { type: 'mdxJsxAttribute', name: 'src', value: imageNode.url },
-          { type: 'mdxJsxAttribute', name: 'width', value: dimensions.width },
-          { type: 'mdxJsxAttribute', name: 'height', value: dimensions.height },
-        ];
+      try {
+        let dimensions = { width: 768, height: 432 }
+        
+        if (!isHttpUrl(imageNode.url)) {
+          const imagePath = `${process.cwd()}/public${imageNode.url}`
+          if (fs.existsSync(imagePath)) {
+            dimensions = sizeOf(imagePath)
+          }
+        }
 
-        // Change node type from p to div to avoid nesting error
-        node.type = 'div';
-        node.children = [imageNode];
+        const mdxImageNode = {
+          type: 'mdxJsxFlowElement',
+          name: 'Image',
+          attributes: [
+            { type: 'mdxJsxAttribute', name: 'alt', value: imageNode.alt || '' },
+            { type: 'mdxJsxAttribute', name: 'src', value: imageNode.url },
+            { type: 'mdxJsxAttribute', name: 'width', value: dimensions.width },
+            { type: 'mdxJsxAttribute', name: 'height', value: dimensions.height },
+            { type: 'mdxJsxAttribute', name: 'loading', value: 'lazy' },
+            { type: 'mdxJsxAttribute', name: 'quality', value: 75 }
+          ],
+          children: []
+        }
+
+        // Convert paragraph to div to avoid nesting issues
+        node.type = 'div'
+        node.children = [mdxImageNode]
+      } catch (error) {
+        console.warn(`Failed to process image: ${imageNode.url}`, error)
       }
     }
-  );
-};
+  )
+}
 
-export default plugin;
+export default plugin

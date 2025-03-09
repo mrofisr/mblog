@@ -1,5 +1,5 @@
 // src/lib/rss.js
-import fs from 'fs';
+import fs from 'fs/promises'; // Use promise-based fs
 import path from 'path';
 import { escape } from '@/lib/html-escaper';
 import { getAllFilesFrontMatter } from '@/lib/mdx';
@@ -8,97 +8,99 @@ import config from '@/config/config';
 
 const root = process.cwd();
 
+// Validate required post fields
+const isValidPost = (post) => {
+  const requiredFields = ['slug', 'title', 'date'];
+  return requiredFields.every(field => post?.[field]);
+};
+
 // Generate individual RSS item
 const generateRssItem = (post) => {
-  if (!post || !post.slug || !post.title || !post.date) {
+  if (!isValidPost(post)) {
     console.error('Invalid post object:', post);
     return '';
   }
 
+  const { siteUrl, author } = config;
   return `
     <item>
-      <guid>${config.siteUrl}/blog/${post.slug}</guid>
+      <guid>${siteUrl}/blog/${post.slug}</guid>
       <title>${escape(post.title)}</title>
-      <link>${config.siteUrl}/blog/${post.slug}</link>
+      <link>${siteUrl}/blog/${post.slug}</link>
       ${post.desc ? `<description>${escape(post.desc)}</description>` : ''}
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
-      <author>(${config.author})</author>
+      <author>${author}</author>
     </item>
-  `;
+  `.trim();
 };
 
 // Generate RSS feed content
 const generateRss = (posts, page = 'feed.xml') => {
-  if (!posts || posts.length === 0) {
-    console.error('No posts available to generate RSS feed');
-    return '';
+  if (!Array.isArray(posts) || posts.length === 0) {
+    throw new Error('No posts available to generate RSS feed');
   }
 
+  const { title, siteUrl, description, language, author } = config;
   return `
+    <?xml version="1.0" encoding="UTF-8"?>
     <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
       <channel>
-        <title>${escape(config.title)}</title>
-        <link>${config.siteUrl}/blog</link>
-        <description>${escape(config.description)}</description>
-        <language>${config.language}</language>
-        <managingEditor>(${config.author})</managingEditor>
-        <webMaster>(${config.author})</webMaster>
+        <title>${escape(title)}</title>
+        <link>${siteUrl}/blog</link>
+        <description>${escape(description)}</description>
+        <language>${language}</language>
+        <managingEditor>${author}</managingEditor>
+        <webMaster>${author}</webMaster>
         <lastBuildDate>${new Date(posts[0].date).toUTCString()}</lastBuildDate>
-        <atom:link href="${config.siteUrl}/${page}" rel="self" type="application/rss+xml"/>
-        ${posts.map(generateRssItem).join('')}
+        <atom:link href="${siteUrl}/${page}" rel="self" type="application/rss+xml"/>
+        ${posts.map(generateRssItem).join('\n')}
       </channel>
     </rss>
-  `;
+  `.trim();
 };
+
+// Write RSS feed to file
+async function writeRSSFeed(content, filePath) {
+  const dir = path.dirname(filePath);
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(filePath, content);
+}
 
 // Generate RSS feeds for all tags
 export async function generateTagRSSFeeds() {
   const allPosts = await getAllFilesFrontMatter("posts");
-  
-  // Get unique tags
-  const allTags = new Set();
-  allPosts.forEach(post => {
-    post.tags.forEach(tag => {
-      allTags.add(kebabCase(tag));
-    });
-  });
+  const tags = new Set(allPosts.flatMap(post => post.tags?.map(kebabCase) || []));
 
-  // Generate RSS feed for each tag
-  for (const tag of allTags) {
+  await Promise.all([...tags].map(async tag => {
     const filteredPosts = allPosts.filter(
-      (post) => post.draft !== true && post.tags.map((t) => kebabCase(t)).includes(tag)
+      post => !post.draft && post.tags?.map(kebabCase).includes(tag)
     );
 
     if (filteredPosts.length > 0) {
       const rss = generateRss(filteredPosts, `tags/${tag}/feed.xml`);
-      const rssPath = path.join(root, "public", "tags", tag);
-      fs.mkdirSync(rssPath, { recursive: true });
-      fs.writeFileSync(path.join(rssPath, "feed.xml"), rss);
+      await writeRSSFeed(rss, path.join(root, "public", "tags", tag, "feed.xml"));
     }
-  }
+  }));
 }
 
 // Generate main RSS feed
 export async function generateMainRSSFeed() {
   const allPosts = await getAllFilesFrontMatter("posts");
-  const filteredPosts = allPosts.filter((post) => post.draft !== true);
+  const filteredPosts = allPosts.filter(post => !post.draft);
 
   if (filteredPosts.length > 0) {
     const rss = generateRss(filteredPosts, 'feed.xml');
-    const rssPath = path.join(root, "public");
-    fs.writeFileSync(path.join(rssPath, "feed.xml"), rss);
+    await writeRSSFeed(rss, path.join(root, "public", "feed.xml"));
   }
 }
 
 // Generate all RSS feeds
 export async function generateAllRSSFeeds() {
   try {
-    console.log('Generating main RSS feed...');
-    await generateMainRSSFeed();
-    
-    console.log('Generating tag-specific RSS feeds...');
-    await generateTagRSSFeeds();
-    
+    await Promise.all([
+      generateMainRSSFeed(),
+      generateTagRSSFeeds()
+    ]);
     console.log('All RSS feeds generated successfully!');
   } catch (error) {
     console.error('Error generating RSS feeds:', error);

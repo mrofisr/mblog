@@ -1,37 +1,67 @@
 import Link from "next/link";
 
-
+/**
+ * A pagination component that displays navigation buttons for multiple pages.
+ * @component
+ * @param {Object} props - Component props
+ * @param {number|string} props.totalPages - Total number of pages
+ * @param {number|string} props.currentPage - Current active page number
+ * @returns {JSX.Element} A pagination component with Previous/Next buttons and current page indicator
+ *
+ * @example
+ * <Pagination totalPages={5} currentPage={1} />
+ */
 export default function Pagination({ totalPages, currentPage }) {
-    const prevPage = parseInt(currentPage) - 1 > 0
-    const nextPage = parseInt(currentPage) + 1 <= parseInt(totalPages)
+    const currentPageNum = parseInt(currentPage);
+    const totalPagesNum = parseInt(totalPages);
+    
+    const PaginationButton = ({ disabled, href, rel, children }) => {
+        if (disabled) {
+            return (
+                <button 
+                    rel={rel}
+                    className="cursor-auto disabled:opacity-50" 
+                    disabled
+                >
+                    {children}
+                </button>
+            );
+        }
+        
+        return (
+            <Link href={href}>
+                <button rel={rel}>{children}</button>
+            </Link>
+        );
+    };
+
+    const getPageLink = (pageNum) => {
+        return pageNum === 1 ? '/blog/' : `/blog/page/${pageNum}`;
+    };
 
     return (
         <div className="pt-6 pb-8 space-y-2 md:space-y-5">
             <nav className="flex justify-between">
-                {!prevPage && (
-                    <button rel="previous" className="cursor-auto disabled:opacity-50" disabled={!prevPage}>
-                        Previous
-                    </button>
-                )}
-                {prevPage && (
-                    <Link href={currentPage - 1 === 1 ? `/blog/` : `/blog/page/${currentPage - 1}`}>
-                        <button rel="previous">Previous</button>
-                    </Link>
-                )}
+                <PaginationButton
+                    disabled={currentPageNum <= 1}
+                    href={getPageLink(currentPageNum - 1)}
+                    rel="previous"
+                >
+                    Previous
+                </PaginationButton>
+
                 <span>
-                    {currentPage} of {totalPages}
+                    {currentPageNum} of {totalPagesNum}
                 </span>
-                {!nextPage && (
-                    <button rel="next" className="cursor-auto disabled:opacity-50" disabled={!nextPage}>
-                        Next
-                    </button>
-                )}
-                {nextPage && (
-                    <Link href={`/blog/page/${currentPage + 1}`}>
-                        <button rel="next">Next</button>
-                    </Link>
-                )}
+
+                <PaginationButton
+                    disabled={currentPageNum >= totalPagesNum}
+                    href={getPageLink(currentPageNum + 1)}
+                    rel="next"
+                >
+                    Next
+                </PaginationButton>
             </nav>
         </div>
-    )
+    );
 }
