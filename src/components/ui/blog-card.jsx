@@ -4,6 +4,7 @@ import { CalendarDays, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Layout from "@/components/custom/layout" // Imported Layout
 import BackToTop from "@/components/custom/back-to-top"
+import { trackEvent } from "@/lib/umami" // New import
 
 function ScrollProgress() {
   const [progress, setProgress] = useState(0)
@@ -85,6 +86,10 @@ export function BlogCard({ children, frontMatter, className }) {
 
 /* New BlogLayout component wrapping Layout around BlogCard and adding ScrollProgress */
 export function BlogLayout({ frontMatter, children, className }) {
+  useEffect(() => {
+    trackEvent("BlogPostView", { title: frontMatter?.title }) // Tracking blog view event
+  }, [])
+
   return (
     <Layout title={frontMatter?.title} description={frontMatter?.summary}>
       <ScrollProgress />

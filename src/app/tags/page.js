@@ -5,6 +5,7 @@ import config from "@/config/config"
 import Link from "next/link"
 import { getAllTags } from "@/lib/tags"
 import * as motion from "motion/react-client"
+import { TagsPageAnalytics } from "@/components/custom/page-analytics"
 
 // Loading Skeleton Component
 const TagsSkeleton = () => (
@@ -47,12 +48,12 @@ async function getTags() {
 export default async function Tags() {
     // Fetch tags directly in the component
     const { tags, error } = await getTags()
-
     return (
         <Layout
             title={config.page.tags.header}
             description={`${config.page.tags.title} - ${config.page.tags.subtitle}`}
         >
+            <TagsPageAnalytics />
             <Title
                 title={config.page.tags.title}
                 subtitle={config.page.tags.subtitle}
