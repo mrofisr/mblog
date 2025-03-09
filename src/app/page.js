@@ -1,5 +1,6 @@
 // src/app/page.js
 import Layout from "@/components/custom/layout"
+import { HomePageAnalytics } from "@/components/custom/page-analytics"
 import Tag from "@/components/custom/tag"
 import Title from "@/components/custom/title"
 import config from "@/config/config"
@@ -27,6 +28,7 @@ export default async function Home() {
   const posts = await getPosts()
   return (
     <Layout>
+      <HomePageAnalytics />
       <Title title={config.page.index.title} subtitle={config.page.index.subtitle} />
       <ul className="divide-y divide-gray-400 md:divide-y-1 dark:divide-gray-700">
         {!posts.length && "No posts found."}
